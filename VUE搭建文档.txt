@@ -1,0 +1,114 @@
+VUE搭建文档 
+1：（node.js）建议64键位 8以上版本版本，亲测稳定可行；如移植项目出现问题，可能是node.js造成  网址（https://nodejs.org/en/）；
+2： VUE依赖于webpack所以必须 先进行安装 npm install webpack -g（建议cnpm进行安装 ，npm可能比较慢，）
+    淘宝镜像npm install -g cnpm --registry https://registry.npm.taobao.org
+3： vue全局部署 npm install vue-cli -g
+4： cmd运行到项目目录下  vue init webpack bright  （bright 为项目名称）
+5： cd bright（bright 为项目名称）  
+6： cnpm install(安装依赖 无依赖项目无法运行)
+7： 可能会引入jq  cnpm install jquery --save（默认为最高版本）
+8:  因为是vue开发建议 安装  element-ui （基于vue） cnpm install element-ui --save
+9: 地图采用高德地图插件 amap    cnpm install vue-amap --save  
+10：路由安装 cnpm install axios --save  
+11：路由安装 cnpm install echarts--save  
+11：路由安装 cnpm install vuex --save  
+11：路由安装 cnpm install node-sass --save  
+11：路由安装 cnpm install echarts--save  
+12： npm run dev（运行项目 默认为80端口）
+13：打包 npm run build
+
+特别强调 （项目已经部署完成只需要在当前项目文件下执行6以后的包括6）
+
+/高德引用篇/
+vue amap插件引用
+
+正常Api引用
+         map = new AMap.Map("powar", {
+			resizeEnable: true,
+			center:[105,34],
+			zoom: 4
+         });
+	 map.plugin(["AMap.MarkerClusterer"], function() {
+						//3D
+		let MarkerClusterer = new AMap.MarkerClusterer({
+			gridSize:80,
+		                renderCluserMarker:_renderCluserMarker
+					})
+		map.addControl(MarkerClusterer)
+		
+	});
+
+
+VUE组件数据之间的传递 分为router
+otbAmap(){
+				
+	this.$router.push({
+	      path: '/views/OtbAmap',  //项目路由 当前模式为router方式 //这种传递A传递到B ，B页面刷新数据会丢失
+		    name: 'OtbAmap',
+		    params: { 
+		        name: 'OtbAmap', 
+		        dataObj: 1
+		    },
+		            
+		});
+        A传递B页面，B接收模式 this.$route.params.dataObj
+}
+离线传递模式
+//	 localStorage.setItem("merchdata",JSON.stringify(indexDome));H5离线存储模式，数据刷新不会丢失
+//       离线接收模式  this.merchdata = JSON.parse(localStorage.getItem("merchdata"));
+//请求
+axios.get('../static/fire.json').then((response) => {
+					// 响应成功回调
+					//数据进行重组
+					let all = [];
+					let fireList = [];
+					fireList.fire = "fire";
+					fireList.number = 1;
+					let norlam = [];
+					norlam.norlam = "norlam";
+					norlam.number = 2;
+					for(let i = 0; i < response.data.firePos.length; i++) {
+						if(response.data.firePos[i].police == 0) { //火
+							fireList.push(response.data.firePos[i]);
+						} else if(response.data.firePos[i].police == 1) {
+							norlam.push(response.data.firePos[i]);
+						}
+					}
+					all.push(fireList, norlam);
+					this.all = all
+					this.fireList = fireList;
+					this.norlam = norlam;
+
+				}, (response) => {
+					// 响应错误回调
+					console.log('服务器请求失败');
+				});
+post 
+ data: {
+        registerUrl: "/KindlePocket/bindingData"
+        newUserInfo: {
+            userName:'n',
+            phone:'13',
+            email:'12',
+            emailPwd:'22',
+            kindleEmail:'asd'
+        }
+    },
+    
+    methods: {
+        register: function() {
+            
+                axios.post(this.registerUrl, this.newUserInfo, {
+                      headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                      }
+                  })
+                  .then(function (response) {
+                    console.log(response);
+                  })
+                  .catch(function (error) {
+                    console.log(error);
+                  });
+            
+        }
+    }
